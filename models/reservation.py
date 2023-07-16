@@ -11,10 +11,11 @@ class Reservation(db.Model):
     check_in_date = db.Column(db.Integer, nullable=False)
     check_out_date = db.Column(db.Integer, nullable=False)
     number_of_guests = db.Column(db.Integer, nullable=False)
+    password = db.Column(db.String, nullable=False)
     
 class ReservationSchema(ma.Schema):
     class Meta:
-        fields = ('reservation_id', 'firstname', 'lastname', 'phone', 'email', 'check_in_date', 'check_out_date', 'number_of_guests')
+        fields = ('reservation_id', 'firstname', 'lastname', 'phone', 'email', 'check_in_date', 'check_out_date', 'number_of_guests', 'password')
 
-reservation_schema = ReservationSchema()
-reservations_shcema = ReservationSchema(many=True)
+reservation_schema = ReservationSchema(exclude=['password'])
+reservations_shcema = ReservationSchema(many=True, exclude=['password'])

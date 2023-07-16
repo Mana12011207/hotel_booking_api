@@ -26,6 +26,7 @@ def seed_db():
             check_in_date = '01012022',
             check_out_date = '03012022',
             number_of_guests = '2',
+            password = bcrypt.generate_password_hash('tayler1').decode('utf-8')
         ),
             Reservation (
             firstname = 'Miranda',
@@ -34,7 +35,8 @@ def seed_db():
             check_in_date = '01022022',
             check_out_date = '03022022',
             number_of_guests = '2',
-            email = 'miranda@email.com'
+            email = 'miranda@email.com',
+            password = bcrypt.generate_password_hash('miranda2').decode('utf-8')
             ),
     ]
     
