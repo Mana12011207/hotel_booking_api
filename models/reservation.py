@@ -1,11 +1,12 @@
-from init import db, Marshmallow
+from init import db, ma
 
 class Reservation(db.Model):
-    __table__ = 'reservations'
+    __tablename__ = 'reservations'
+    
     reservation_id = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.String, nullable=False)
     lastname = db.Column(db.String, nullable=False)
-    phone = db.Column(db.Integer, nullable=False, uniqu=True)
+    phone = db.Column(db.Integer, nullable=False, unique=True)
     email = db.Column(db.String)
     check_in_date = db.Column(db.Integer, nullable=False)
     check_out_date = db.Column(db.Integer, nullable=False)
