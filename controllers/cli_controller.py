@@ -22,7 +22,7 @@ def seed_db():
         Reservation(
             firstname = 'Tayler',
             lastname = 'Swift',
-            phone = '1234567',
+            phonenumber = '1234567',
             check_in_date = '01012022',
             check_out_date = '03012022',
             number_of_guests = '2',
@@ -31,7 +31,7 @@ def seed_db():
             Reservation (
             firstname = 'Miranda',
             lastname = 'Kerr',
-            phone = '1355791',
+            phonenumber = '1355791',
             check_in_date = '01022022',
             check_out_date = '03022022',
             number_of_guests = '2',
