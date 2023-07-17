@@ -4,6 +4,7 @@ from models.reservation import Reservation, reservation_schema, reservations_sch
 from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
+from datetime import timedelta
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -20,6 +21,7 @@ def auth_register():
         reservation.firstname = body_data.get('firstname')
         reservation.lastname = body_data.get('lastname')
         reservation.phonenumber = body_data.get('phonenumber')
+        reservation.email = body_data.get('email')
         reservation.check_in_date = body_data.get('check_in_date')
         reservation.check_out_date = body_data.get('check_out_date')
         reservation.number_of_guests = body_data.get('number_of_guests')
@@ -36,5 +38,20 @@ def auth_register():
             return{'error' : 'Phone number already in use'}, 409
         if err.orig.pgcode == errorcodes.NOT_NULL_VIOLATION:
             return{'error' : f'Please enter {err.orig.diag.column_name}' }, 409
+        
+
+@auth_bp.route('/login', methods=['POST'])
+def auth_login():
+    body_data = request.get_json()
+    # Find the reservation by phonenumber
+    stmt = db.select(Reservation).filter_by(phonenumber=body_data.get('phonenumber'))
+    reservation = db.session.scalar(stmt)
+    #if reservation exists and password is correct
+    if reservation and bcrypt.check_password_hash(reservation.password, body_data.get('password')):
+        token = create_access_token(identity=str(reservation.reservation_id), expires_delta=timedelta(days=3))
+        return {'phonenumber':reservation.phonenumber, 'token': token }
+    else:
+        return{'error': 'Invalid phonenumber or password'}, 401
+
         
         
