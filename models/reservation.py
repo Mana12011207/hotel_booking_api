@@ -15,7 +15,7 @@ class Reservation(db.Model):
     number_of_guests = db.Column(db.Integer, nullable=False)
     password = db.Column(db.String, nullable=False)
     
-    invoices = db.relationship('Invoice', back_populates = 'reservation', cascade='all. delete' )
+    invoices = db.relationship('Invoice', back_populates = 'reservation')
 
 # fields marshmallo to convert 
 class ReservationSchema(ma.Schema):
