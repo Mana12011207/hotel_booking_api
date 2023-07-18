@@ -1,8 +1,10 @@
 from init import db, ma
+from marshmallow import fields
 
+# reservation model equivalent to a table by using SQLALchemy
 class Reservation(db.Model):
     __tablename__ = 'reservations'
-    
+# attributes
     reservation_id = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.String, nullable=False)
     lastname = db.Column(db.String, nullable=False)
@@ -13,9 +15,13 @@ class Reservation(db.Model):
     number_of_guests = db.Column(db.Integer, nullable=False)
     password = db.Column(db.String, nullable=False)
     
-class ReservationSchema(ma.Schema):
-    class Meta:
-        fields = ('reservation_id', 'firstname', 'lastname', 'phonenumber', 'email', 'check_in_date', 'check_out_date', 'number_of_guests', 'password')
+    invoices = db.relationship('Invoice', back_populates = 'reservation', cascade='all. delete' )
 
-reservation_schema = ReservationSchema(exclude=['password'])
+# fields marshmallo to convert 
+class ReservationSchema(ma.Schema):
+    invoices = fields.List(fields.Nested('InvoiceSchema', exclude=['reservation']))
+    class Meta:
+        fields = ('reservation_id', 'firstname', 'lastname', 'phonenumber', 'email', 'check_in_date', 'check_out_date', 'number_of_guests', 'password', 'invoices')
+
+reservation_schema = ReservationSchema(exclude=['password']) 
 reservations_schema = ReservationSchema(many=True, exclude=['password'])

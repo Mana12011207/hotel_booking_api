@@ -9,7 +9,7 @@ from datetime import timedelta
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
-# register is post method instead of get because we do not want to create but need to send extra data we normally use post 
+# register is post method instead of get because we do not want to create but need to send data to backend 
 @auth_bp.route('/register', methods=['POST'])
 def auth_register():
     try:
@@ -33,6 +33,7 @@ def auth_register():
         db.session.commit()
         # Respond to the client
         return reservation_schema.dump(reservation), 201
+    # sqlalchemy c
     except IntegrityError as err:
         if err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
             return{'error' : 'Phone number already in use'}, 409
