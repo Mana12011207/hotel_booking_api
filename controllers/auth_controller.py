@@ -1,10 +1,10 @@
 from flask import Blueprint, request
 from init import db, bcrypt
 from models.reservation import Reservation, reservation_schema, reservations_schema
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
-from datetime import timedelta
+from datetime import timedelta 
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -53,6 +53,31 @@ def auth_login():
         return {'phonenumber':reservation.phonenumber, 'token': token }
     else:
         return{'error': 'Invalid phonenumber or password'}, 401
+    
 
-        
-        
+@auth_bp.route('/<int:id>', methods=['DELETE'])
+@jwt_required()
+def delete_one_reservation(id):
+    stmt = db.select(Reservation).filter_by(reservation_id=id)
+    reservation = db.session.scalar(stmt)
+    if reservation:
+        db.session.delete(reservation)
+        db.session.commit()
+        return {'message' : f'Reservation{reservation.reservation_id} deleted successfully'}
+    else : 
+        return {'error' : f'Reservation is not found with Reservation_id{id}'}, 404
+    
+@auth_bp.route('/<int:id>', methods=['PUT','PATCH'])
+@jwt_required()
+def update_one_reservation(id):
+    body_data = request.get_json()
+    stmt = db.select(Reservation).filter_by(reservation_id = id)
+    reservation = db.session.scalar(stmt)
+    if reservation:
+        reservation.number_of_guests = body_data.get('number_of_guest') or reservation.number_of_guests
+        reservation.check_in_date = body_data.get('check_in_date') or reservation.check_in_date
+        reservation.check_out_date = body_data.get('check_out_date') or reservation.check_out_date
+        db.session.commit()
+        return reservation_schema.dump(reservation)
+    else:
+        return {'error': f'Reservation is not found with reservation_id {id}'}, 404

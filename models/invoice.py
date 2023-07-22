@@ -18,7 +18,7 @@ class InvoiceSchema(ma.Schema):
     reservation = fields.Nested('ReservationSchema', exclude= ('password','number_of_guests'))
     
     class Meta:
-        fields = ('invoice_id', 'amound', 'payment_date', 'payment_method', 'reservation')
+        fields = ('invoice_id', 'amount', 'payment_date', 'payment_method', 'reservation')
         ordered = True
 
 invoice_schema = InvoiceSchema()
