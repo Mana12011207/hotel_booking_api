@@ -3,6 +3,7 @@ from init import db, bcrypt
 from models.reservation import Reservation
 from models.invoice import Invoice
 from datetime import date
+from models.hotel import Hotel
 
 
 db_commands = Blueprint('db',__name__)
@@ -21,6 +22,15 @@ def drop_all():
 @db_commands.cli.command('seed')
 def seed_db():
     reservations = [
+        Reservation(
+            firstname = 'admin',
+            lastname = 'admin',
+            phonenumber = '00000000',
+            check_in_date = '02022020',
+            check_out_date = '02022023',
+            number_of_guests = '1',
+            password = bcrypt.generate_password_hash('admin123').decode('utf-8')
+        ),
         Reservation(
             firstname = 'Tayler',
             lastname = 'Swift',
@@ -78,6 +88,59 @@ def seed_db():
     ]
     
     db.session.add_all(invoices)
+    
+    hotels = [
+        Hotel (
+            hotel_name = 'Sydney Hotel',
+            city = 'Sydney',
+            description = 'Sydney hotel description',
+            address = '199 George St, The Rocks NSW',
+            phone = '1234567890'
+        ),
+        Hotel (
+            hotel_name = 'Melborne Hotel',
+            city = 'Melborne',
+            description = 'Melborne hotel description',
+            address = '200 Lonsdale St, Melbourne VIC',
+            phone = '0987654321'
+        ),
+        Hotel (
+            hotel_name = 'Cairns Hotel',
+            city = 'Cairns',
+            description = 'Cairns hotel description',
+            address = 'Pier Point Rd, Cairns City QLD 4870',
+            phone = '121212121'
+        )
+    ]
+    
+    db.session.add_all(hotels)
+    
+    # rooms = [
+    #     Room (
+    #         room_name = 'Deluxe ciry room',
+    #         bed_type = 'King',
+    #         description = 'Ideally suited to the modern traveller, these newly remodelled guest rooms are situated on higher floors providing striking view of skyline',
+    #         reservation = reservations[1],
+    #         hotel = hotels[1]
+    #     ),
+    #     Room (
+    #         room_name = 'Premier full harbour club room',
+    #         bed_type = 'king and sofabed',
+    #         description = 'the remodelled residential_style corner studio evoke a sense of the city with stunning views',
+    #         reservation = reservations[2],
+    #         hotel = hotels[2]
+    #     ),
+    #     Room (
+    #         room_name = 'One-bedroom opera club suite',
+    #         bed_type = 'king or twin',
+    #         description = 'Beautiful parquet floors, timber wall panelling and a palette of soft blues and greys exude sophistication in this luxe suite',
+    #         reservation = reservations[3],
+    #         hotel = hotels[3]
+    #     )
+    # ]
+    
+    # db.session.add_all(rooms)
+
     db.session.commit()
     
 

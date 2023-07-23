@@ -6,12 +6,12 @@ from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
 from datetime import timedelta 
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+reservation_bp = Blueprint('reservation', __name__, url_prefix='/reservation')
 
 
 # register is post method instead of get because we do not want to create but need to send data to backend 
-@auth_bp.route('/register', methods=['POST'])
-def auth_register():
+@reservation_bp.route('/register', methods=['POST'])
+def reservation_register():
     try:
 # to access body in the postman 
 # body_date has the following json data in postman{"firstname": "Ann", "lastname":"Hathaway","phone": "9786533", "check_in_date" : "03042022", "check_out_date" : "06042022","number_of_guests" : "4","password": "ann123"}
@@ -41,8 +41,8 @@ def auth_register():
             return{'error' : f'Please enter {err.orig.diag.column_name}' }, 409
         
 
-@auth_bp.route('/login', methods=['POST'])
-def auth_login():
+@reservation_bp.route('/login', methods=['POST'])
+def reservation_login():
     body_data = request.get_json()
     # Find the reservation by phonenumber
     stmt = db.select(Reservation).filter_by(phonenumber=body_data.get('phonenumber'))
@@ -53,9 +53,10 @@ def auth_login():
         return {'phonenumber':reservation.phonenumber, 'token': token }
     else:
         return{'error': 'Invalid phonenumber or password'}, 401
-    
 
-@auth_bp.route('/<int:id>', methods=['DELETE'])
+
+
+@reservation_bp.route('/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_one_reservation(id):
     stmt = db.select(Reservation).filter_by(reservation_id=id)
@@ -67,7 +68,7 @@ def delete_one_reservation(id):
     else : 
         return {'error' : f'Reservation is not found with Reservation_id{id}'}, 404
     
-@auth_bp.route('/<int:id>', methods=['PUT','PATCH'])
+@reservation_bp.route('/<int:id>', methods=['PUT','PATCH'])
 @jwt_required()
 def update_one_reservation(id):
     body_data = request.get_json()

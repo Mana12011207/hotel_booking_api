@@ -20,7 +20,7 @@ def get_one_invoice(id):
     if invoice:
         return invoice_schema.dump(invoice)
     else :
-        return {'error': f'Invoice not found with id {id}'}, 404
+        return {'error': f'Invoice is found with id {id}'}, 404
 
 @invoices_bp.route('/', methods = ['POST'])
 @jwt_required()

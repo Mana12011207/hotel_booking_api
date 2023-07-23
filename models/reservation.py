@@ -14,16 +14,15 @@ class Reservation(db.Model):
     check_out_date = db.Column(db.Integer, nullable=False)
     number_of_guests = db.Column(db.Integer, nullable=False)
     password = db.Column(db.String, nullable=False)
-    
+
     invoices = db.relationship('Invoice', back_populates = 'reservation', cascade='all, delete')
-    rooms = db.relationship('Room', back_populates = 'reservation', cascade= 'save-update')
+
 
 # fields marshmallo to convert 
 class ReservationSchema(ma.Schema):
     invoices = fields.List(fields.Nested('InvoiceSchema', exclude=['reservation']))
-    rooms = fields.List(fields.Nested('RoomSchema', exclude=['reservation']))
     class Meta:
-        fields = ('reservation_id', 'firstname', 'lastname', 'phonenumber', 'email', 'check_in_date', 'check_out_date', 'number_of_guests', 'password', 'invoices', 'rooms')
+        fields = ('reservation_id', 'firstname', 'lastname', 'phonenumber', 'email', 'check_in_date', 'check_out_date', 'number_of_guests', 'password', 'invoices')
         ordered = True
         
 reservation_schema = ReservationSchema(exclude=['password']) 
