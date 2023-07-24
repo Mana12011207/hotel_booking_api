@@ -64,7 +64,7 @@ def delete_one_reservation(id):
     if reservation:
         db.session.delete(reservation)
         db.session.commit()
-        return {'message' : f'Reservation{reservation.reservation_id} deleted successfully'}
+        return {'message' : f'Reservation{reservation.reservation_id} is deleted successfully'}
     else : 
         return {'error' : f'Reservation is not found with Reservation_id{id}'}, 404
     

@@ -20,7 +20,7 @@ def get_one_invoice(id):
     if invoice:
         return invoice_schema.dump(invoice)
     else :
-        return {'error': f'Invoice is found with id {id}'}, 404
+        return {'error': f'Invoice is not found with id {id}'}, 404
 
 @invoices_bp.route('/', methods = ['POST'])
 @jwt_required()
@@ -34,10 +34,36 @@ def create_invoices():
         payment_method = body_data.get('payment_method'),
         reservation_id=get_jwt_identity()
     )
-    
     # Add that card to the session
     db.session.add(invoice)
     # commit
     db.session.commit()
     #Respond to the client
     return invoice_schema.dump(invoice), 201
+
+@invoices_bp.route('/<int:id>', methods =['DELETE'])
+@jwt_required()
+def delete_one_invoice(id):
+    stmt = db.select(Invoice).filter_by(invoice_id = id)
+    invoice = db.session.scalar(stmt)
+    if invoice:
+        db.session.delete(invoice)
+        db.session.commit()
+        return {'message': f'Invoice {invoice.invoice_id} is deleted successfully'}
+    else :
+        return {'error' : f'Invoice is not found with id{id}. Please try with different id again'}, 404
+
+
+@invoices_bp.route('/<int:id>', methods = ['PUT','PATCH'])
+@jwt_required()
+def update_one_invoice(id):
+    body_data = request.get_json()
+    stmt = db.select(Invoice).filter_by(invoice_id = id)
+    invoice = db.session.scalar(stmt)
+    if invoice:
+        invoice.amount = body_data.get('amount') or invoice.amount
+        invoice.description = body_data.get('description') or invoice.description
+        db.session.commit()
+        return invoice_schema.dump(invoice)
+    else:
+        return {'error': f'Invoice is not found with Invoice_id{id}'}, 404

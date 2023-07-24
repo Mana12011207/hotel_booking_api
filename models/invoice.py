@@ -15,7 +15,7 @@ class Invoice(db.Model):
     reservation = db.relationship('Reservation', back_populates = 'invoices')
     
 class InvoiceSchema(ma.Schema):
-    reservation = fields.Nested('ReservationSchema', exclude= ['password','number_of_guests'])
+    reservation = fields.Nested('ReservationSchema', exclude= ['password','number_of_guests', 'email', 'phonenumber'])
     
     class Meta:
         fields = ('invoice_id', 'amount', 'payment_date', 'payment_method', 'reservation')

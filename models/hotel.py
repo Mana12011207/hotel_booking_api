@@ -11,9 +11,13 @@ class Hotel(db.Model):
     address = db.Column(db.String)
     phone = db.Column(db.Integer)
     
+    rooms = db.relationship('Room', back_populates = 'hotel', cascade = 'all,delete')
+    
+    
 class HotelSchema(ma.Schema):
+    rooms = fields.List(fields.Nested('RoomSchema', exclude = ['hotel']))
     class Meta:
-        fields = ('hotel_id', 'hotel_name', 'city', 'description', 'address', 'phone')
+        fields = ('hotel_id', 'hotel_name', 'city', 'description', 'address', 'phone', 'rooms')
         ordered = True
         
 hotel_schema = HotelSchema()

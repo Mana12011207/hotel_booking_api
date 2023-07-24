@@ -4,6 +4,7 @@ from models.reservation import Reservation
 from models.invoice import Invoice
 from datetime import date
 from models.hotel import Hotel
+from models.room import Room
 
 
 db_commands = Blueprint('db',__name__)
@@ -22,15 +23,6 @@ def drop_all():
 @db_commands.cli.command('seed')
 def seed_db():
     reservations = [
-        Reservation(
-            firstname = 'admin',
-            lastname = 'admin',
-            phonenumber = '00000000',
-            check_in_date = '02022020',
-            check_out_date = '02022023',
-            number_of_guests = '1',
-            password = bcrypt.generate_password_hash('admin123').decode('utf-8')
-        ),
         Reservation(
             firstname = 'Tayler',
             lastname = 'Swift',
@@ -115,34 +107,39 @@ def seed_db():
     
     db.session.add_all(hotels)
     
-    # rooms = [
-    #     Room (
-    #         room_name = 'Deluxe ciry room',
-    #         bed_type = 'King',
-    #         description = 'Ideally suited to the modern traveller, these newly remodelled guest rooms are situated on higher floors providing striking view of skyline',
-    #         reservation = reservations[1],
-    #         hotel = hotels[1]
-    #     ),
-    #     Room (
-    #         room_name = 'Premier full harbour club room',
-    #         bed_type = 'king and sofabed',
-    #         description = 'the remodelled residential_style corner studio evoke a sense of the city with stunning views',
-    #         reservation = reservations[2],
-    #         hotel = hotels[2]
-    #     ),
-    #     Room (
-    #         room_name = 'One-bedroom opera club suite',
-    #         bed_type = 'king or twin',
-    #         description = 'Beautiful parquet floors, timber wall panelling and a palette of soft blues and greys exude sophistication in this luxe suite',
-    #         reservation = reservations[3],
-    #         hotel = hotels[3]
-    #     )
-    # ]
+    rooms = [
+        Room (
+            room_name = 'Deluxe ciry room',
+            bed_type = 'King',
+            description = 'Ideally suited to the modern traveller, these newly remodelled guest rooms are situated on higher floors providing striking view of skyline',
+            reservation = reservations[0],
+            hotel = hotels[0]
+        ),
+        Room (
+            room_name = 'Premier full harbour club room',
+            bed_type = 'king and sofabed',
+            description = 'the remodelled residential_style corner studio evoke a sense of the city with stunning views',
+            reservation = reservations[1],
+            hotel = hotels[1]
+        ),
+        Room (
+            room_name = 'One-bedroom opera club suite',
+            bed_type = 'twin',
+            description = 'Beautiful parquet floors, timber wall panelling and a palette of soft blues and greys exude sophistication in this luxe suite',
+            reservation = reservations[2],
+            hotel = hotels[2]
+        ),
+        Room (
+            room_name = 'Opera Suite',
+            bed_type = 'king',
+            description = 'This is a specialty suite',
+            reservation = reservations[2],
+            hotel = hotels[2]
+        )
+    ]
     
-    # db.session.add_all(rooms)
+    db.session.add_all(rooms)
 
     db.session.commit()
-    
-
     
     print("Tables seeded")
