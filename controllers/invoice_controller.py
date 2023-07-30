@@ -6,8 +6,10 @@ from datetime import date
 from flask_jwt_extended import get_jwt_identity, jwt_required
 import functools
 
+# A Blueprint object named invoices_bp is created
 invoices_bp = Blueprint('invoices', __name__, url_prefix='/invoices')
 
+# The decorator function authorise_as_admin is defined to authorise a specific action as admin.
 def authorise_as_admin(fn):
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
@@ -20,18 +22,16 @@ def authorise_as_admin(fn):
             return {'error':'Not authoriesd to perform this action'}, 403
     return wrapper 
 
-
+# The @invoices_bp.route('/') decorator is used to define an endpoint to retrieve all invoices accessible only to the administrator when accessing the /invoices endpoint.
 @invoices_bp.route('/')
 @jwt_required()
 @authorise_as_admin
 def get_all_invoices():
-    is_admin = authorise_as_admin()
-    if not is_admin:
-        return{'error': 'Not authorised to access invoices'}, 403
     stmt = db.select(Invoice).order_by(Invoice.payment_date.desc())
     invoices = db.session.scalars(stmt)
     return invoices_schema.dump(invoices)
 
+# The @invoices_bp.route('/<int:id>') decorator is used to define an endpoint to retrieve the invoice for a given ID when accessing a URL such as /invoices/<id>.
 @invoices_bp.route('/<int:id>')
 @jwt_required()
 def get_one_invoice(id):
@@ -42,7 +42,7 @@ def get_one_invoice(id):
     else :
         return {'error': f'Invoice is not found with id {id}'}, 404
 
-
+# The @invoices_bp.route('/', methods=['POST']) decorator is used to define an endpoint for creating a new invoice when a POST request is sent to the /invoices endpoint.
 @invoices_bp.route('/', methods = ['POST'])
 @jwt_required()
 @authorise_as_admin
@@ -56,13 +56,14 @@ def create_invoices():
         payment_method = body_data.get('payment_method'),
         reservation_id=get_jwt_identity()
     )
-    # Add that card to the session
+    # add invoice to the session
     db.session.add(invoice)
     # commit
     db.session.commit()
-    #Respond to the client
+    #respond to the client
     return invoice_schema.dump(invoice), 201
 
+# @invoices_bp.route('/<int:id>', methods=['DELETE']) decorator to define an endpoint for deleting invoices for a given ID when a DELETE request is sent to the URL /invoices/<id The following is done.
 @invoices_bp.route('/<int:id>', methods =['DELETE'])
 @jwt_required()
 @authorise_as_admin

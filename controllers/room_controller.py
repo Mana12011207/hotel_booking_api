@@ -8,7 +8,7 @@ import functools
 
 
 
-#hotels/hotel_id/rooms
+#blueprint hotels/hotel_id/rooms is created
 rooms_bp = Blueprint('rooms', __name__, url_prefix='/<int:hotel_id>/rooms')
 
 def authorise_as_admin(fn):
@@ -23,12 +23,14 @@ def authorise_as_admin(fn):
             return {'error':'Not authoriesd to perform this action'}, 403
     return wrapper 
 
+# decorator is used to define an endpoint to retrieve information on all rooms belonging to a given hotel when a GET request is sent to the /rooms endpoint.
 @rooms_bp.route('/')
 def get_all_rooms(hotel_id):
     stmt = db.select(Room).filter(Room.hotel_id == hotel_id).order_by(Room.room_id.asc())
     rooms = db.session.execute(stmt).scalars().all()
     return rooms_schema.dump(rooms)
 
+# decorator is used to define an endpoint to retrieve the room information corresponding to the specified hotel and room ID when a GET request is sent to a URL like /rooms/<room_id>. The following information is defined.
 @rooms_bp.route('/<int:room_id>')
 def get_one_room(hotel_id, room_id):
     stmt = db.select(Room).filter_by(Room.hotel_id == hotel_id, Room.room_id == room_id)
@@ -81,7 +83,7 @@ def update_room(hotel_id, room_id):
     stmt = db.select(Room).filter_by(room_id=room_id)
     room = db.session.scalar(stmt) # room from database that needs to be updated
     if room:
-        # trying to update room_name field of room
+        # trying to update room_name, bed_type, description field of room
         room.room_name = body_data.get('room_name') or room.room_name
         room.bed_type = body_data.get('bed_type') or room.bed_type
         room.description = body_data.get('description') or room.description

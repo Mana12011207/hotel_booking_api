@@ -10,6 +10,8 @@ import functools
 hotels_bp = Blueprint('hotels', __name__, url_prefix='/hotels')
 hotels_bp.register_blueprint(rooms_bp)
 
+
+# The decorator function authorise_as_admin is defined to authorise a specific action as admin.
 def authorise_as_admin(fn):
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
@@ -22,13 +24,14 @@ def authorise_as_admin(fn):
             return {'error':'Not authoriesd to perform this action'}, 403
     return wrapper 
 
+# The @hotels_bp.route('/') decorator is used to define an endpoint to retrieve information about all hotels when a GET request is sent to the /hotels endpoint.
 @hotels_bp.route('/')
 def get_all_hotels():
     stmt = db.select(Hotel).order_by(Hotel.hotel_id.asc())
     hotels = db.session.scalars(stmt)
     return hotels_schema.dump(hotels)
 
-
+# decorator is used to define an endpoint to retrieve information about the hotel with the specified ID when a GET request is sent to a URL like /hotels/<id>.
 @hotels_bp.route('/<int:id>')
 def get_one_hotel(id):
     stmt = db.select(Hotel).filter_by(hotel_id=id)
@@ -44,18 +47,22 @@ def get_one_hotel(id):
 @authorise_as_admin
 def create_hotels():
     body_data = hotel_schema.load(request.get_json())
+    # Create a new hotel model instance
     hotel = Hotel(
         hotel_name = body_data.get('hotel_name'),
         city = body_data.get('city'),
         description = body_data.get('description'),
         review = body_data.get('review')
     )
+    # add hotel to the session
     db.session.add(hotel)
+    # commit
     db.session.commit()
+    # respond to the client
     return hotel_schema.dump(hotel), 201
 
 
-
+# @hotels_bp.route('/<int:id>', methods=['DELETE']) decorator is used to define an endpoint for deleting hotels with a given ID when a DELETE request is sent to a URL like /hotels/<id>. The following table shows the endpoints.
 @hotels_bp.route('/<int:id>', methods = ['DELETE'])
 @jwt_required()
 @authorise_as_admin
@@ -70,7 +77,7 @@ def delete_one_hotel(id):
         return {'error': f'Hotel is not found with id {id}. Please try with different id again'}
     
     
-    
+# decorator to update the hotel with the given ID when a PUT or PATCH request is sent to a URL like /hotels/<id>. Defining endpoints.
 @hotels_bp.route('/<int:id>', methods = ['PUT', 'PATCH'])
 @jwt_required()
 @authorise_as_admin
