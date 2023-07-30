@@ -1,11 +1,26 @@
 from flask import Blueprint, request
 from init import db
+from models.reservation import Reservation
 from models.hotel import Hotel, hotel_schema, hotels_schema
 from flask_jwt_extended import get_jwt_identity, jwt_required
+from .room_controller import  rooms_bp
+import functools
 
-
+# since room_controller is the same level of hotel_controller in the directory so '.'is the need in front of the controller
 hotels_bp = Blueprint('hotels', __name__, url_prefix='/hotels')
+hotels_bp.register_blueprint(rooms_bp)
 
+def authorise_as_admin(fn):
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        reservation_id = get_jwt_identity()
+        stmt = db.select(Reservation).filter_by(reservation_id=reservation_id)
+        reservation = db.session.scalar(stmt)
+        if reservation.is_admin:
+            return fn(*args, **kwargs)
+        else:
+            return {'error':'Not authoriesd to perform this action'}, 403
+    return wrapper 
 
 @hotels_bp.route('/')
 def get_all_hotels():
@@ -26,14 +41,14 @@ def get_one_hotel(id):
 
 @hotels_bp.route('/', methods=['POST'])
 @jwt_required()
+@authorise_as_admin
 def create_hotels():
-    body_data = request.get_json()
+    body_data = hotel_schema.load(request.get_json())
     hotel = Hotel(
         hotel_name = body_data.get('hotel_name'),
         city = body_data.get('city'),
         description = body_data.get('description'),
-        address = body_data.get('address'),
-        phone =  body_data.get('phone')
+        review = body_data.get('review')
     )
     db.session.add(hotel)
     db.session.commit()
@@ -43,6 +58,7 @@ def create_hotels():
 
 @hotels_bp.route('/<int:id>', methods = ['DELETE'])
 @jwt_required()
+@authorise_as_admin
 def delete_one_hotel(id):
     stmt = db.select(Hotel).filter_by(hotel_id = id)
     hotel = db.session.scalar(stmt)
@@ -57,8 +73,9 @@ def delete_one_hotel(id):
     
 @hotels_bp.route('/<int:id>', methods = ['PUT', 'PATCH'])
 @jwt_required()
+@authorise_as_admin
 def update_one_hotel(id):
-    body_data = request.get_json()
+    body_data = hotel_schema.load(request.get_json(),partial = True )
     stmt = db.select(Hotel).filter_by(hotel_id = id)
     hotel = db.session.scalar(stmt)
     if hotel :

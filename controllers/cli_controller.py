@@ -24,9 +24,19 @@ def drop_all():
 def seed_db():
     reservations = [
         Reservation(
+            firstname = 'admin',
+            lastname = 'admin',
+            phonenumber = '1234567'  ,
+            check_in_date = '01012023',
+            check_out_date = '01012026',
+            number_of_guests = '1',
+            password = bcrypt.generate_password_hash('admin123').decode('utf-8'),
+            is_admin = True
+        ),
+        Reservation(
             firstname = 'Tayler',
             lastname = 'Swift',
-            phonenumber = '1234567',
+            phonenumber = '98075437',
             check_in_date = '01012022',
             check_out_date = '03012022',
             number_of_guests = '2',
@@ -57,14 +67,14 @@ def seed_db():
     
     invoices = [
         Invoice(
-            amount = '300.50',
+            amount = '300',
             description = 'roomcharge',
             payment_date = date.today(),
             payment_method = 'creditcard',
             reservation = reservations[0]
         ),
         Invoice(
-            amount = '500.50',
+            amount = '500',
             description = 'roomcharge',
             payment_date = date.today(),
             payment_method = 'debitcard',
@@ -83,25 +93,22 @@ def seed_db():
     
     hotels = [
         Hotel (
-            hotel_name = 'Sydney Hotel',
-            city = 'Sydney',
-            description = 'Sydney hotel description',
-            address = '199 George St, The Rocks NSW',
-            phone = '1234567890'
+            hotel_name = 'sydney hotel',
+            city = 'sydney',
+            description = 'sydney hotel description',
+            review = 'review for sydney hotel'
         ),
         Hotel (
-            hotel_name = 'Melborne Hotel',
-            city = 'Melborne',
-            description = 'Melborne hotel description',
-            address = '200 Lonsdale St, Melbourne VIC',
-            phone = '0987654321'
+            hotel_name = 'melborne hotel',
+            city = 'melborne',
+            description = 'melborne hotel description',
+            review = 'review for meloborne hotel'
         ),
         Hotel (
-            hotel_name = 'Cairns Hotel',
-            city = 'Cairns',
-            description = 'Cairns hotel description',
-            address = 'Pier Point Rd, Cairns City QLD 4870',
-            phone = '121212121'
+            hotel_name = 'cairns hotel',
+            city = 'cairns',
+            description = 'cairns hotel description',
+            review = 'review for carns hotel'
         )
     ]
     
@@ -109,30 +116,30 @@ def seed_db():
     
     rooms = [
         Room (
-            room_name = 'Deluxe ciry room',
-            bed_type = 'King',
-            description = 'Ideally suited to the modern traveller, these newly remodelled guest rooms are situated on higher floors providing striking view of skyline',
+            room_name = 'deluxe ciry room',
+            bed_type = 'king',
+            description = 'deluxe city room with description',
             reservation = reservations[0],
             hotel = hotels[0]
         ),
         Room (
-            room_name = 'Premier full harbour club room',
-            bed_type = 'king and sofabed',
-            description = 'the remodelled residential_style corner studio evoke a sense of the city with stunning views',
+            room_name = 'premier full harbour club room',
+            bed_type = 'queen',
+            description = 'Premier full harbour club room with description',
             reservation = reservations[1],
             hotel = hotels[1]
         ),
         Room (
-            room_name = 'One-bedroom opera club suite',
+            room_name = 'opera club suite',
             bed_type = 'twin',
-            description = 'Beautiful parquet floors, timber wall panelling and a palette of soft blues and greys exude sophistication in this luxe suite',
+            description = 'opera club suite',
             reservation = reservations[2],
             hotel = hotels[2]
         ),
         Room (
-            room_name = 'Opera Suite',
+            room_name = 'five star Suite',
             bed_type = 'king',
-            description = 'This is a specialty suite',
+            description = 'five star suite with description',
             reservation = reservations[2],
             hotel = hotels[2]
         )
